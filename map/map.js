@@ -25,7 +25,9 @@ var initMap = function() {
     var ctx = canvas.getContext('2d');
     ctx.clearRect(0,0,canvas.width,canvas.height);
     
-    for (var i = 1; i < data.length; i++) {
+    if( data.length == 0 )
+    	return;
+    for (var i = 0; i < data.length; i++) {
       if( data[i].draw ) { 
 	      p = map.locationPoint(data[i].loc);
 	      var radius = 5;
@@ -50,12 +52,15 @@ var initMap = function() {
 			lines = d;
 			console.log("back ", lines.length);
 			
-			for(i = 7; i < lines.length-1; i++){	//loop through all but first and last
-				dataPt = lineToObject(line); 
+			for(i = 0; i < lines.length-1; i++){	//loop through all but first and last
+				console.log(lines[i]);
+				dataPt = lineToDataPoint(lines[i]); 
 				data.push( dataPt ); 
 				
 			}
-	   }
+			
+			redraw(); 
+	   });
   	  
 	  // var loc1 = new com.modestmaps.Location(22.417961, 114.142284);
 	  // var loc2 = new com.modestmaps.Location(22.429069, 114.068470);
@@ -66,25 +71,30 @@ var initMap = function() {
 	  // data.push( { loc: loc2, date: new Date(), url: "http:", hashTags: "#" , draw: true } );
 	  // data.push( { loc: loc3, date: new Date(), url: "http:", hashTags: "#" , draw: true } );
 	  // data.push( { loc: loc4, date: new Date(), url: "http:", hashTags: "#" , draw: true } );
+
   }
   
   function lineToDataPoint(line){
+  		console.log(line);
   		var tokens = line.split("\t");
     	//make sure right number of tokens
-		if( tokens.length != 6 ){//should never happen
-			console.log("BAD LINE: ", line, " ", tokens.length);
-			return; 
-		}
+		// if( tokens.length != 4 ){//should never happen
+			// console.log("BAD LINE: ", line, " ", tokens.length);
+			// return; 
+		// }
 		 
 		//parse file
-		var lat = parseFloat(tokens[0]);
-		var lon = parseFloat(tokens[1]);
+		var lat = parseFloat(tokens[1]);
+		console.log(lat);
+		var lon = parseFloat(tokens[0]);
 		var loc = new com.modestmaps.Location(lat, lon);
 		
 		var date = tokens[2]; //new Date( parseInt(tokens[2]), parseInt(tokens[3])-1, parseInt(tokens[4]) ); 
 		var url = tokens[3];
-		var hashTags = tokens[4]; 
+		var hashTags = "#"; 
 		var draw = true;
+		
+		return { loc: loc, date: date, url: "http:", hashTags: "#" , draw: true };
   }
   
   function loadTabDelim(callback){
@@ -92,7 +102,7 @@ var initMap = function() {
 		var txtFile = new XMLHttpRequest();
 		var lines;
 		var allText;
-		txtFile.open("GET", "datafile.txt", true);
+		txtFile.open("GET", "hkcrisisdata.csv", true);//file://localhost/Users/jauri/Development/OpenSourceDay/crisisnet-ghc/map/
 		txtFile.onreadystatechange = function() {
 		 	if (txtFile.readyState === 4) {  // Makes sure the document is ready to parse.
 		    	if (txtFile.status === 200) {  // Makes sure it's found the file.
