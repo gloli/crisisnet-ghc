@@ -45,16 +45,73 @@ var initMap = function() {
   
   function loadData(){
   	  //load locations
-	  var loc1 = new com.modestmaps.Location(22.417961, 114.142284);
-	  var loc2 = new com.modestmaps.Location(22.429069, 114.068470);
-	  var loc3 = new com.modestmaps.Location(22.407805, 114.051304);
-	  var loc4 = new com.modestmaps.Location(22.407951, 114.142384);
-	    
-	  data.push( { loc: loc1, date: new Date(), url: "http:", hashTags: "#" , draw: true } );
-	  data.push( { loc: loc2, date: new Date(), url: "http:", hashTags: "#" , draw: true } );
-	  data.push( { loc: loc3, date: new Date(), url: "http:", hashTags: "#" , draw: true } );
-	  data.push( { loc: loc4, date: new Date(), url: "http:", hashTags: "#" , draw: true } );
+  	  
+  	  loadTabDelim( function(d) {//callback function
+			lines = d;
+			console.log("back ", lines.length);
+			
+			for(i = 7; i < lines.length-1; i++){	//loop through all but first and last
+				dataPt = lineToObject(line); 
+				data.push( dataPt ); 
+				
+			}
+	   }
+  	  
+	  // var loc1 = new com.modestmaps.Location(22.417961, 114.142284);
+	  // var loc2 = new com.modestmaps.Location(22.429069, 114.068470);
+	  // var loc3 = new com.modestmaps.Location(22.407805, 114.051304);
+	  // var loc4 = new com.modestmaps.Location(22.407951, 114.142384);
+// 	    
+	  // data.push( { loc: loc1, date: new Date(), url: "http:", hashTags: "#" , draw: true } );
+	  // data.push( { loc: loc2, date: new Date(), url: "http:", hashTags: "#" , draw: true } );
+	  // data.push( { loc: loc3, date: new Date(), url: "http:", hashTags: "#" , draw: true } );
+	  // data.push( { loc: loc4, date: new Date(), url: "http:", hashTags: "#" , draw: true } );
   }
+  
+  function lineToDataPoint(line){
+  		var tokens = line.split("\t");
+    	//make sure right number of tokens
+		if( tokens.length != 6 ){//should never happen
+			console.log("BAD LINE: ", line, " ", tokens.length);
+			return; 
+		}
+		 
+		//parse file
+		var lat = parseFloat(tokens[0]);
+		var lon = parseFloat(tokens[1]);
+		var loc = new com.modestmaps.Location(lat, lon);
+		
+		var date = tokens[2]; //new Date( parseInt(tokens[2]), parseInt(tokens[3])-1, parseInt(tokens[4]) ); 
+		var url = tokens[3];
+		var hashTags = tokens[4]; 
+		var draw = true;
+  }
+  
+  function loadTabDelim(callback){
+		console.log("loading data...");
+		var txtFile = new XMLHttpRequest();
+		var lines;
+		var allText;
+		txtFile.open("GET", "datafile.txt", true);
+		txtFile.onreadystatechange = function() {
+		 	if (txtFile.readyState === 4) {  // Makes sure the document is ready to parse.
+		    	if (txtFile.status === 200) {  // Makes sure it's found the file.
+		    		console.log("found file");
+		      		allText = txtFile.responseText; 
+		      		lines = txtFile.responseText.split("\n"); // Will separate each line into an array
+		      		callback(lines);
+		    	}
+		    	else{
+		    		console.log("not 200");
+		    	}
+		 	}
+		 	else{
+		 		console.log("not 4");
+		 	}
+	 	}
+	 	console.log("fail");
+		txtFile.send(null);//only reaches here if it fails... 
+   }
   
   function filterHashtag(hashtag){
   	 for (var i = 1; i < data.length; i++) {
