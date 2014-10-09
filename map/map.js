@@ -30,11 +30,11 @@ var initMap = function() {
     for (var i = 0; i < data.length; i++) {
       if( data[i].draw ) { 
 	      p = map.locationPoint(data[i].loc);
-	      var radius = 5;
+	      var radius = 10;
 	
 	      ctx.beginPath();
 	      ctx.arc(p.x, p.y, radius, 0, 2 * Math.PI, false);
-	      ctx.fillStyle = '#C190F2';
+	      ctx.fillStyle = '#F26161';
 	      ctx.fill();
 	      ctx.lineWidth = 1;
 	      ctx.strokeStyle = 'black';
@@ -102,7 +102,7 @@ var initMap = function() {
 		var txtFile = new XMLHttpRequest();
 		var lines;
 		var allText;
-		txtFile.open("GET", "hkcrisisdata.csv", true);//file://localhost/Users/jauri/Development/OpenSourceDay/crisisnet-ghc/map/
+		txtFile.open("GET", "sample.txt", true);//file://localhost/Users/jauri/Development/OpenSourceDay/crisisnet-ghc/map/
 		txtFile.onreadystatechange = function() {
 		 	if (txtFile.readyState === 4) {  // Makes sure the document is ready to parse.
 		    	if (txtFile.status === 200) {  // Makes sure it's found the file.
